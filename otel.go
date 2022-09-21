@@ -34,7 +34,7 @@ func (t LttngTracer) Start(ctx context.Context, name string, _ ...oteltrace.Span
 		traceID: t.currentID,
 		start:   start,
 	}
-	ReportStartSpan(t.currentID, t.currentID, t.currentID, t.currentID, name, start)
+	ReportStartSpan(t.currentID, t.currentID, t.instrumentationName, name, start)
 	atomic.AddUint64(&t.currentID, 1)
 	return oteltrace.ContextWithSpan(ctx, span), span
 }
@@ -57,7 +57,7 @@ func (LttngSpan) SetError(bool) {}
 func (LttngSpan) SetAttributes(...attribute.KeyValue) {}
 
 func (s LttngSpan) End(...oteltrace.SpanOption) {
-	ReportEndSpan(s.traceID, s.traceID, s.traceID, time.Since(s.start))
+	ReportEndSpan(s.traceID, time.Since(s.start))
 }
 
 func (LttngSpan) RecordError(error, ...oteltrace.EventOption) {}
