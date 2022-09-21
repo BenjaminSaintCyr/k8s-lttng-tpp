@@ -11,26 +11,26 @@ import (
 	oteltrace "go.opentelemetry.io/otel/trace"
 )
 
-type lttngTracerProvider struct{}
+type LttngTracerProvider struct{}
 
-var _ oteltrace.TracerProvider = lttngTracerProvider{}
+var _ oteltrace.TracerProvider = LttngTracerProvider{}
 
-func (p lttngTracerProvider) Tracer(instrumentationName string, _ ...oteltrace.TracerOption) oteltrace.Tracer {
-	return lttngTracer{
+func (p LttngTracerProvider) Tracer(instrumentationName string, _ ...oteltrace.TracerOption) oteltrace.Tracer {
+	return LttngTracer{
 		instrumentationName: instrumentationName,
 	}
 }
 
-type lttngTracer struct {
+type LttngTracer struct {
 	instrumentationName string
 	currentID           uint64
 }
 
-var _ oteltrace.Tracer = lttngTracer{}
+var _ oteltrace.Tracer = LttngTracer{}
 
-func (t lttngTracer) Start(ctx context.Context, name string, _ ...oteltrace.SpanOption) (context.Context, oteltrace.Span) {
+func (t LttngTracer) Start(ctx context.Context, name string, _ ...oteltrace.SpanOption) (context.Context, oteltrace.Span) {
 	start := time.Now()
-	span := lttngSpan{
+	span := LttngSpan{
 		traceID: t.currentID,
 		start:   start,
 	}
@@ -39,31 +39,31 @@ func (t lttngTracer) Start(ctx context.Context, name string, _ ...oteltrace.Span
 	return oteltrace.ContextWithSpan(ctx, span), span
 }
 
-type lttngSpan struct {
+type LttngSpan struct {
 	traceID uint64
 	start   time.Time
 }
 
-var _ oteltrace.Span = lttngSpan{}
+var _ oteltrace.Span = LttngSpan{}
 
-func (lttngSpan) SpanContext() oteltrace.SpanContext { return oteltrace.SpanContext{} }
+func (LttngSpan) SpanContext() oteltrace.SpanContext { return oteltrace.SpanContext{} }
 
-func (lttngSpan) IsRecording() bool { return true }
+func (LttngSpan) IsRecording() bool { return true }
 
-func (lttngSpan) SetStatus(code codes.Code, msg string) {}
+func (LttngSpan) SetStatus(code codes.Code, msg string) {}
 
-func (lttngSpan) SetError(bool) {}
+func (LttngSpan) SetError(bool) {}
 
-func (lttngSpan) SetAttributes(...attribute.KeyValue) {}
+func (LttngSpan) SetAttributes(...attribute.KeyValue) {}
 
-func (s lttngSpan) End(...oteltrace.SpanOption) {
+func (s LttngSpan) End(...oteltrace.SpanOption) {
 	ReportEndSpan(s.traceID, s.traceID, s.traceID, time.Since(s.start))
 }
 
-func (lttngSpan) RecordError(error, ...oteltrace.EventOption) {}
+func (LttngSpan) RecordError(error, ...oteltrace.EventOption) {}
 
-func (lttngSpan) Tracer() oteltrace.Tracer { return lttngTracer{} }
+func (LttngSpan) Tracer() oteltrace.Tracer { return LttngTracer{} }
 
-func (lttngSpan) AddEvent(string, ...oteltrace.EventOption) {}
+func (LttngSpan) AddEvent(string, ...oteltrace.EventOption) {}
 
-func (lttngSpan) SetName(string) {}
+func (LttngSpan) SetName(string) {}

@@ -1,3 +1,3 @@
 #define TRACEPOINT_CREATE_PROBES
 
-#include "jaeger-tp.h"
+#include "k8s-tp.h"

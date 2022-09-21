@@ -1,8 +1,8 @@
 #undef TRACEPOINT_PROVIDER
-#define TRACEPOINT_PROVIDER jaeger_ust
+#define TRACEPOINT_PROVIDER k8s_ust
 
 #undef TRACEPOINT_INCLUDE
-#define TRACEPOINT_INCLUDE "./jaeger-tp.h"
+#define TRACEPOINT_INCLUDE "./k8s-tp.h"
 
 #if !defined(_TP_H) || defined(TRACEPOINT_HEADER_MULTI_READ)
 #define _TP_H
@@ -10,7 +10,7 @@
 #include <lttng/tracepoint.h>
 
 TRACEPOINT_EVENT(
-    jaeger_ust,
+    k8s_ust,
     start_span,
 
     /* Input arguments */
@@ -35,7 +35,7 @@ TRACEPOINT_EVENT(
 )
 
 TRACEPOINT_EVENT(
-    jaeger_ust,
+    k8s_ust,
     end_span,
 
     /* Input arguments */
