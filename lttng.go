@@ -6,8 +6,8 @@ package lttng
 #define TRACEPOINT_DEFINE
 #include "k8s-tp.h"
 
-void traceStartSpan(uint64_t s_id, uint64_t s_p_id, char* c_name, char* o_name, int64_t s_time) {
-	tracepoint(k8s_ust, start_span, s_id, s_p_id, c_name, o_name, s_time);
+void traceStartSpan(uint64_t s_id, uint64_t s_p_id, char* o_name, int64_t s_time) {
+	tracepoint(k8s_ust, start_span, s_id, s_p_id, o_name, s_time);
 }
 
 void traceEndSpan(uint64_t s_id, int64_t dur) {
@@ -17,14 +17,16 @@ void traceEndSpan(uint64_t s_id, int64_t dur) {
 import "C"
 
 import (
+	"sync/atomic"
 	"time"
 )
 
-func ReportStartSpan(spanID uint64, parentID uint64, componentName string, operationName string, startTime time.Time) {
+var IDcounter uint64 = 1
+
+func ReportStartSpan(spanID uint64, parentID uint64, operationName string, startTime time.Time) {
 	C.traceStartSpan(
 		C.uint64_t(spanID),
 		C.uint64_t(parentID),
-		C.CString(componentName),
 		C.CString(operationName),
 		C.int64_t(startTime.UnixNano()),
 	)

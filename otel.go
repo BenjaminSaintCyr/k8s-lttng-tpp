@@ -34,7 +34,7 @@ func (t LttngTracer) Start(ctx context.Context, name string, _ ...oteltrace.Span
 		traceID: t.currentID,
 		start:   start,
 	}
-	ReportStartSpan(t.currentID, t.currentID, t.instrumentationName, name, start)
+	ReportStartSpan(t.currentID, t.currentID, name, start)
 	atomic.AddUint64(&t.currentID, 1)
 	return oteltrace.ContextWithSpan(ctx, span), span
 }
