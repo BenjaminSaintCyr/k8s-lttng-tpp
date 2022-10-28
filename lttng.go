@@ -38,3 +38,34 @@ func ReportEndSpan(spanID uint64, duration time.Duration) {
 		C.int64_t(duration.Nanoseconds()),
 	)
 }
+
+type LttngCtx struct {
+	Id        uint64
+	StartTime time.Time
+}
+
+func ReportStart(operationName string) LttngCtx {
+	atomic.AddUint64(&IDcounter, 1)
+	id := IDcounter
+	start := time.Now()
+	ReportStartSpan(id, 0, operationName, start)
+	return LttngCtx{
+		Id:        id,
+		StartTime: start,
+	}
+}
+
+func (ctx *LttngCtx) End() {
+	ReportEndSpan(ctx.Id, time.Since(ctx.StartTime))
+}
+
+func (ctx *LttngCtx) ReportChild(operationName string) LttngCtx {
+	atomic.AddUint64(&IDcounter, 1)
+	id := IDcounter
+	start := time.Now()
+	ReportStartSpan(id, ctx.Id, operationName, start)
+	return LttngCtx{
+		Id:        id,
+		StartTime: start,
+	}
+}
