@@ -4,35 +4,34 @@ import (
 	"sync/atomic"
 )
 
-type LttngCtx struct {
-	Id uint64
+type Ctx struct {
+	ID uint64
 }
 
 var (
-	IDcounter uint64 = 1
+	idCounter uint64 = 1
 )
 
-func ReportStart(operationName, context string) LttngCtx {
-	atomic.AddUint64(&IDcounter, 1)
-	id := IDcounter
-	var parent uint64 = 0
+func ReportStart(operationName, context string) Ctx {
+	id := atomic.AddUint64(&idCounter, 1)
+	const parent uint64 = 0
 
 	ReportStartSpan(id, parent, operationName, context)
-	return LttngCtx{
-		Id: id,
+	return Ctx{
+		ID: id,
 	}
 }
 
-func (ctx *LttngCtx) End(context string) {
-	ReportEndSpan(ctx.Id, context)
+func (ctx *Ctx) End(context string) {
+	ReportEndSpan(ctx.ID, context)
 }
 
-func (ctx *LttngCtx) ReportChild(operationName, context string) LttngCtx {
-	atomic.AddUint64(&IDcounter, 1)
-	id := IDcounter
+func (ctx *Ctx) ReportChild(operationName, context string) Ctx {
+	atomic.AddUint64(&idCounter, 1)
+	id := idCounter
 
-	ReportStartSpan(id, ctx.Id, operationName, context)
-	return LttngCtx{
-		Id: id,
+	ReportStartSpan(id, ctx.ID, operationName, context)
+	return Ctx{
+		ID: id,
 	}
 }

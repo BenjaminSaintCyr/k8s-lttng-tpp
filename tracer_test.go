@@ -9,8 +9,8 @@ func BenchmarkReportStart(b *testing.B) {
 }
 
 func BenchmarkEnd(b *testing.B) {
-	ctx := LttngCtx{
-		Id: uint64(0),
+	ctx := Ctx{
+		ID: uint64(0),
 	}
 	for n := 0; n < b.N; n++ {
 		ctx.End("end test")
@@ -18,8 +18,8 @@ func BenchmarkEnd(b *testing.B) {
 }
 
 func BenchmarkReportChild(b *testing.B) {
-	ctx := LttngCtx{
-		Id: uint64(0),
+	ctx := Ctx{
+		ID: uint64(0),
 	}
 	for n := 0; n < b.N; n++ {
 		ctx.ReportChild("test", "testing")
