@@ -4,68 +4,30 @@ package lttng
 #cgo LDFLAGS: -ldl -llttng-ust
 
 #define TRACEPOINT_DEFINE
-#include "k8s-tp.h"
+#include "k8s-tpp.h"
 
-void traceStartSpan(uint64_t s_id, uint64_t s_p_id, char* o_name, int64_t s_time) {
-	tracepoint(k8s_ust, start_span, s_id, s_p_id, o_name, s_time);
+void traceStartSpan(uint64_t s_id, uint64_t s_p_id, char* o_name, char* o_ctx) {
+	tracepoint(k8s_ust, start_span, s_id, s_p_id, o_name, o_ctx);
 }
 
-void traceEndSpan(uint64_t s_id, int64_t dur) {
-	tracepoint(k8s_ust, end_span, s_id, dur);
+void traceEndSpan(uint64_t s_id, char* o_ctx) {
+	tracepoint(k8s_ust, end_span, s_id, o_ctx);
 }
 */
 import "C"
 
-import (
-	"sync/atomic"
-	"time"
-)
-
-var IDcounter uint64 = 1
-
-func ReportStartSpan(spanID uint64, parentID uint64, operationName string, startTime time.Time) {
+func ReportStartSpan(spanID uint64, parentID uint64, operationName string, context string) {
 	C.traceStartSpan(
 		C.uint64_t(spanID),
 		C.uint64_t(parentID),
 		C.CString(operationName),
-		C.int64_t(startTime.UnixNano()),
+		C.CString(context),
 	)
 }
 
-func ReportEndSpan(spanID uint64, duration time.Duration) {
+func ReportEndSpan(spanID uint64, context string) {
 	C.traceEndSpan(
 		C.uint64_t(spanID),
-		C.int64_t(duration.Nanoseconds()),
+		C.CString(context),
 	)
-}
-
-type LttngCtx struct {
-	Id        uint64
-	StartTime time.Time
-}
-
-func ReportStart(operationName string) LttngCtx {
-	atomic.AddUint64(&IDcounter, 1)
-	id := IDcounter
-	start := time.Now()
-	ReportStartSpan(id, 0, operationName, start)
-	return LttngCtx{
-		Id:        id,
-		StartTime: start,
-	}
-}
-
-func (ctx *LttngCtx) End() {
-	ReportEndSpan(ctx.Id, time.Since(ctx.StartTime))
-}
-
-func (ctx *LttngCtx) ReportChild(operationName string) LttngCtx {
-	atomic.AddUint64(&IDcounter, 1)
-	id := IDcounter
-	start := time.Now()
-	ReportStartSpan(id, ctx.Id, operationName, start)
-	return LttngCtx{
-		Id:        id,
-		StartTime: start,
-	}
 }
