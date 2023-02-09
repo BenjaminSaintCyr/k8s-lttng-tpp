@@ -2,3 +2,5 @@
 *.o
 k8s-tpp.c
 k8s-tpp.h
+
+*.out

@@ -9,4 +9,10 @@ tpp: tpp-files
 	ar -rc k8s-tpp.a k8s-tpp.o
 
 clean:
-	rm -f *.o *.a *.c *.h
+	rm -f *.o *.a *.c *.h *.out
+
+benchmark: tpp-files
+	go test -bench=. --ldflags '-extldflags "-Wl,--allow-multiple-definition"'
+
+profile: tpp-files
+	go test -bench=. --ldflags '-extldflags "-Wl,--allow-multiple-definition"' -benchmem -memprofile memprofile.out -cpuprofile profile.out
