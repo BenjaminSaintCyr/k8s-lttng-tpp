@@ -8,7 +8,7 @@ k8s-tpp.a: k8s-tpp.c k8s-tp.h
 tpp: k8s-tpp.a
 
 clean:
-	rm -f *.o *.a *.c *.h *.out
+	rm -f *.o *.a *.out
 
 benchmark: tpp
 	go test -bench=.
