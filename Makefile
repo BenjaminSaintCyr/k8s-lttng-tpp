@@ -1,18 +1,17 @@
 all: tpp
 	go build
 
-tpp-files: k8s-tpp.tp
-	lttng-gen-tp k8s-tpp.tp
-
-tpp: tpp-files
+k8s-tpp.a: k8s-tpp.c k8s-tp.h
 	gcc -I. -c k8s-tpp.c -o k8s-tpp.o
 	ar -rc k8s-tpp.a k8s-tpp.o
+
+tpp: k8s-tpp.a
 
 clean:
 	rm -f *.o *.a *.c *.h *.out
 
-benchmark: tpp-files
-	go test -bench=. --ldflags '-extldflags "-Wl,--allow-multiple-definition"'
+benchmark: tpp
+	go test -bench=.
 
-profile: tpp-files
-	go test -bench=. --ldflags '-extldflags "-Wl,--allow-multiple-definition"' -benchmem -memprofile memprofile.out -cpuprofile profile.out
+profile: tpp
+	go test -bench=. -benchmem -memprofile memprofile.out -cpuprofile profile.out

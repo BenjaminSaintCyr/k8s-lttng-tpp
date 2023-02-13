@@ -4,7 +4,7 @@ package lttng
 #cgo LDFLAGS: -ldl -llttng-ust
 
 #define TRACEPOINT_DEFINE
-#include "k8s-tpp.h"
+#include "k8s-tp.h"
 
 void traceStartSpan(uint64_t s_id, uint64_t s_p_id, char* o_name, char* o_ctx) {
 	tracepoint(k8s_ust, start_span, s_id, s_p_id, o_name, o_ctx);
