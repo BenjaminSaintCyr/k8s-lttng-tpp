@@ -11,39 +11,20 @@
 
 TRACEPOINT_EVENT(
     k8s_ust,
-    start_span,
+    event,
 
     /* Input arguments */
     TP_ARGS(
-        uint64_t, s_id,
-        uint64_t, s_p_id,
-        char*, o_name,
-        char*, o_ctx
+        const char*, o_name,
+        int, name_length,
+        const char*, o_ctx,
+        int, ctx_length
     ),
 
     /* Output event fields */
     TP_FIELDS(
-        ctf_integer(uint64_t, span_id, s_id)
-        ctf_integer(uint64_t, parent_span_id, s_p_id)
-        ctf_string(op_name, o_name)
-        ctf_string(op_ctx, o_ctx)
-    )
-)
-
-TRACEPOINT_EVENT(
-    k8s_ust,
-    end_span,
-
-    /* Input arguments */
-    TP_ARGS(
-        uint64_t, s_id,
-        char*, o_ctx
-    ),
-
-    /* Output event fields */
-    TP_FIELDS(
-        ctf_integer(uint64_t, span_id, s_id)
-        ctf_string(op_ctx, o_ctx)
+        ctf_sequence_text(char, op_name, o_name, unsigned int, name_length)
+        ctf_sequence_text(char, op_ctx, o_ctx, unsigned int, ctx_length)
     )
 )
 
